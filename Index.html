@@ -1,0 +1,191 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disaster Tweet Classifier</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #eef2ff;
+            color: #1f2937;
+        }
+
+        header {
+            background: linear-gradient(120deg, #312e81, #2563eb);
+            color: white;
+            padding: 35px 20px;
+            text-align: center;
+        }
+
+        header h1 { margin: 0 0 10px; }
+        header p { margin: 0; }
+
+        main {
+            max-width: 900px;
+            margin: 28px auto;
+            padding: 0 16px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 22px;
+            box-shadow: 0 5px 18px rgba(31, 41, 55, 0.08);
+        }
+
+        textarea, input[type="file"] {
+            width: 100%;
+            margin: 10px 0 16px;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        textarea { min-height: 120px; resize: vertical; }
+
+        button, .download {
+            display: inline-block;
+            border: 0;
+            border-radius: 8px;
+            padding: 12px 18px;
+            background: #2563eb;
+            color: white;
+            font-size: 15px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        button:hover, .download:hover { background: #1d4ed8; }
+
+        .result {
+            border-radius: 10px;
+            padding: 18px;
+            margin-top: 18px;
+            background: #f1f5f9;
+            border-left: 6px solid #64748b;
+        }
+
+        .disaster { border-left-color: #dc2626; background: #fef2f2; }
+        .safe { border-left-color: #16a34a; background: #f0fdf4; }
+        .error { color: #b91c1c; font-weight: bold; }
+
+        .table-wrap { overflow-x: auto; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 14px;
+        }
+
+        th, td {
+            border-bottom: 1px solid #e5e7eb;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th { background: #f8fafc; }
+        td:first-child { max-width: 420px; overflow-wrap: anywhere; }
+
+        footer {
+            text-align: center;
+            color: #64748b;
+            padding: 20px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Disaster Tweet Classifier</h1>
+    <p>Machine learning for classifying disaster-related social media posts</p>
+</header>
+
+<main>
+    <section class="card">
+        <h2>Classify a single tweet</h2>
+        <p>Paste a tweet below, then select <strong>Classify Tweet</strong>.</p>
+
+        <form method="POST">
+            <input type="hidden" name="action" value="single">
+            <label for="tweet">Tweet content</label>
+            <textarea id="tweet" name="tweet"
+                placeholder="Example: Heavy flooding has damaged several roads..."
+                required></textarea>
+            <button type="submit">Classify Tweet</button>
+        </form>
+
+        {% if result %}
+        <div class="result {{ 'disaster' if result.target == 1 else 'safe' }}">
+            <h3>Prediction: {{ result.prediction }}</h3>
+            <p><strong>Class:</strong> {{ result.target }}</p>
+            <p><strong>Tweet:</strong> {{ result.text }}</p>
+        </div>
+        {% endif %}
+    </section>
+
+    <section class="card">
+        <h2>Classify tweets from a CSV file</h2>
+        <p>Your CSV must contain a column named <code>text</code>.
+           You can upload up to 5,000 tweets per file.</p>
+
+        <form method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="action" value="batch">
+            <label for="csv_file">Choose CSV file</label>
+            <input type="file" id="csv_file" name="csv_file"
+                accept=".csv" required>
+            <button type="submit">Upload and Classify</button>
+        </form>
+
+        {% if download_file %}
+            <p><a class="download"
+                href="{{ url_for('download', filename=download_file) }}">
+                Download prediction results (CSV)
+            </a></p>
+        {% endif %}
+
+        {% if batch_results %}
+        <h3>Prediction preview</h3>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Tweet</th><th>Prediction</th><th>Class</th></tr>
+                </thead>
+                <tbody>
+                    {% for item in batch_results[:20] %}
+                    <tr>
+                        <td>{{ item.text }}</td>
+                        <td>{{ item.prediction }}</td>
+                        <td>{{ item.target }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <p>Showing up to 20 results. Download the CSV for all predictions.</p>
+        {% endif %}
+    </section>
+
+    {% if error %}
+        <section class="card error">{{ error }}</section>
+    {% endif %}
+
+    <section class="card">
+        <h3>About this project</h3>
+        <p>This application uses a trained machine learning model to predict
+           whether a tweet is disaster-related (class 1) or not
+           disaster-related (class 0).</p>
+        <p><strong>Loaded model:</strong> {{ model_name }}</p>
+        <p>Predictions are model estimates, not confirmation of a real-world event.</p>
+    </section>
+</main>
+
+<footer>Disaster Tweet Classification | Flask + Python + Machine Learning</footer>
+</body>
+</html>

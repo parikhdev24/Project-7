@@ -1,0 +1,7 @@
+﻿tweet,predicted_label,predicted_class,disaster_probability
+Flooding has destroyed several homes.,1,Disaster,0.7229502576871633
+FLOODING HAS DESTROYED SEVERAL HOMES!!!,1,Disaster,0.6835480741871459
+Flooding has destroyed several homes https://example.com,1,Disaster,0.7904099163457872
+Wildfire spreading near homes #emergency,1,Disaster,0.9793268676121943
+That test was a disaster!,0,Non-disaster,0.41511669240092
+This new phone is fire!,0,Non-disaster,0.08452890695061509

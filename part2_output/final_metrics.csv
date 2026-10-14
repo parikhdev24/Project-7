@@ -1,0 +1,2 @@
+Best_model,CV_F1_score,Test_accuracy,Test_precision,Test_recall,Test_F1_score
+Tuned Logistic Regression,0.7503594339001697,0.793471019320453,0.7554179566563467,0.7625,0.7589424572317263
